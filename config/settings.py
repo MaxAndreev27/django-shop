@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Third party Apps
     # User Apps
     "shop.apps.ShopConfig",
+    "cart.apps.CartConfig",
     # Inner
     "django.contrib.admin",
     "django.contrib.auth",
@@ -77,13 +78,16 @@ TEMPLATES = [
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
+                # "django.template.context_processors.debug",
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "cart.context_processors.cart",
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -166,3 +170,5 @@ mimetypes.add_type("text/javascript", ".js", True)
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
+
+CART_SESSION_ID = "cart"
