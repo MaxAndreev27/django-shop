@@ -173,3 +173,17 @@ INTERNAL_IPS = [
 ]
 
 CART_SESSION_ID = "cart"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Використовуємо REDIS_URL, який у вас уже частково заведений у в'юхах
+REDIS_URL = os.environ.get("REDIS_URL", "redis://127.0.0.1:6379/0")
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+
+# Інші корисні налаштування за бажанням
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = TIME_ZONE
