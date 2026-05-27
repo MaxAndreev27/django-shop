@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # User Apps
     "shop.apps.ShopConfig",
     "cart.apps.CartConfig",
+    "orders.apps.OrdersConfig",
     # Inner
     "django.contrib.admin",
     "django.contrib.auth",
