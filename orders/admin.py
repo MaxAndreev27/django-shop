@@ -81,7 +81,7 @@ class OrderAdmin(admin.ModelAdmin):
         "created",
         "updated",
         order_detail,
-        # order_pdf,
+        order_pdf,
     ]
     list_filter = ["paid", "created", "updated"]
     inlines = [OrderItemInline]
