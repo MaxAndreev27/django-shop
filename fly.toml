@@ -40,9 +40,9 @@ console_command = '/code/manage.py shell'
     port = 5555
 
 [[vm]]
-  memory = '1gb'
+  memory = '2gb'
   cpus = 1
-  memory_mb = 1024
+  memory_mb = 2048
 
 [[statics]]
   guest_path = '/code/static'
