@@ -80,7 +80,7 @@ class OrderAdmin(admin.ModelAdmin):
         order_payment,
         "created",
         "updated",
-        # order_detail,
+        order_detail,
         # order_pdf,
     ]
     list_filter = ["paid", "created", "updated"]
