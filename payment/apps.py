@@ -12,7 +12,7 @@ class PaymentConfig(AppConfig):
         # Безпечно дістаємо ключ з налаштувань
         stripe_secret = getattr(settings, "STRIPE_SECRET_KEY", "")
 
-        if stripe_secret.startswith("sk_test_"):
+        if stripe_secret and stripe_secret.startswith("sk_test_"):
             print("🚀 Stripe is in TEST mode for orders. Everything is safe.")
         elif stripe_secret.startswith("sk_live_"):
             print("🚨 ATTENTION: Stripe is connected to LIVE mode in the orders app!")
