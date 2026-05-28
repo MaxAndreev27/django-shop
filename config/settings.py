@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "shop.apps.ShopConfig",
     "cart.apps.CartConfig",
     "orders.apps.OrdersConfig",
+    "payment.apps.PaymentConfig",
     # Inner
     "django.contrib.admin",
     "django.contrib.auth",
@@ -187,3 +188,12 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
+
+STRIPE_LIVE_MODE = os.getenv("STRIPE_LIVE_MODE", "False") == "True"
+
+if STRIPE_LIVE_MODE:
+    STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_LIVE_PUBLISHABLE_KEY")
+    STRIPE_SECRET_KEY = os.environ.get("STRIPE_LIVE_SECRET_KEY")
+else:
+    STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_TEST_PUBLISHABLE_KEY")
+    STRIPE_SECRET_KEY = os.environ.get("STRIPE_TEST_SECRET_KEY")
