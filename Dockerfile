@@ -5,6 +5,15 @@ FROM python:${PYTHON_VERSION}
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# Встановлюємо системні бібліотеки, необхідні для роботи WeasyPrint
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpango-1.0-0 \
+    libharfbuzz0b \
+    libpangoft2-1.0-0 \
+    libglib2.0-0 \
+    shared-mime-info \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /code
 
 WORKDIR /code
