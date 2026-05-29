@@ -8,7 +8,6 @@ from orders.models import Order
 
 # create the Stripe instance
 stripe.api_key = settings.STRIPE_SECRET_KEY
-# stripe.api_version = settings.STRIPE_API_VERSION
 
 
 def payment_process(request):
@@ -42,12 +41,19 @@ def payment_process(request):
                 }
             )
 
+        # Stripe coupon
+        if order.coupon:
+            stripe_coupon = stripe.Coupon.create(
+                name=order.coupon.code, percent_off=order.discount, duration="once"
+            )
+            session_data["discounts"] = [{"coupon": stripe_coupon.id}]
+
         # create Stripe checkout session
         session = stripe.checkout.Session.create(**session_data)
-        
+
         if not session.url:
             return redirect(cancel_url, code=303)
-        
+
         # redirect to Stripe payment form
         return redirect(session.url, code=303)
 
