@@ -14,6 +14,8 @@ import mimetypes
 import os
 from pathlib import Path
 
+from django.utils.translation import gettext_lazy as _
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,6 +45,9 @@ SITE_ID = 1
 
 INSTALLED_APPS = [
     # Third party Apps
+    "rosetta",
+    "parler",
+    "localflavor",
     # User Apps
     "shop.apps.ShopConfig",
     "cart.apps.CartConfig",
@@ -65,6 +70,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -135,7 +141,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en"
+
+LANGUAGES = [
+    ("en", _("English")),
+    ("uk", _("Ukrainian")),
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / "locale",
+]
 
 TIME_ZONE = "UTC"
 
@@ -189,6 +204,18 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
+# django-parler settings
+# Використовуємо 1 замість None (синхронізація з SITE_ID)
+PARLER_LANGUAGES = {
+    1: (
+        {"code": "uk"},
+        {"code": "en"},
+    ),
+    "default": {
+        "fallbacks": ["uk"],
+        "hide_untranslated": False,
+    },
+}
 
 STRIPE_PUBLISHABLE_KEY = os.environ.get(
     "STRIPE_PUBLISHABLE_KEY",

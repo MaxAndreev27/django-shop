@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpangoft2-1.0-0 \
     libglib2.0-0 \
     shared-mime-info \
+    gettext \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /code
