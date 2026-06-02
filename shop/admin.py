@@ -1,11 +1,14 @@
 from django.contrib import admin
+from import_export.admin import ImportExportMixin
 from parler.admin import TranslatableAdmin
 
 from .models import Category, Product
+from .resources import CategoryResource, ProductResource
 
 
 @admin.register(Category)
-class CategoryAdmin(TranslatableAdmin):
+class CategoryAdmin(ImportExportMixin, TranslatableAdmin):
+    resource_classes = [CategoryResource]
     list_display = ["name", "slug"]
 
     def get_prepopulated_fields(self, request, obj=None):
@@ -13,7 +16,8 @@ class CategoryAdmin(TranslatableAdmin):
 
 
 @admin.register(Product)
-class ProductAdmin(TranslatableAdmin):
+class ProductAdmin(ImportExportMixin, TranslatableAdmin):
+    resource_classes = [ProductResource]
     list_display = ["name", "slug", "price", "available", "created", "updated"]
     list_filter = ["available", "created", "updated"]
     list_editable = ["price", "available"]
