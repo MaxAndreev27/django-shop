@@ -1,6 +1,4 @@
-from django.utils.translation import (
-    get_language,
-)
+from django.utils.translation import get_language
 from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
 
@@ -15,7 +13,8 @@ class CategoryResource(resources.ModelResource):
 
     class Meta:
         model = Category
-        fields = ("id",)
+        # ОБОВ'ЯЗКОВО додаємо кастомні поля сюди, інакше вони вирізаються при експорті
+        fields = ("id", "name_uk", "slug_uk", "name_en", "slug_en")
         export_order = ("id", "name_uk", "slug_uk", "name_en", "slug_en")
 
     def dehydrate_name_uk(self, instance):
@@ -31,16 +30,11 @@ class CategoryResource(resources.ModelResource):
         return instance.safe_translation_getter("slug", language_code="en") or ""
 
     def save_instance(self, instance, is_create, row, **kwargs):
-        # Визначаємо поточну мову адмінки (наприклад, 'uk' або 'en')
         current_lang = get_language() or "uk"
-
-        # 1. Спочатку заповнюємо переклади В ОБ'ЄКТІ (до збереження в базу)
         for lang in ["uk", "en"]:
             name = row.get(f"name_{lang}")
             slug = row.get(f"slug_{lang}")
 
-            # ФОЛБЕК: Якщо у файлі звичайні колонки 'name'/'slug',
-            # відносимо їх до поточної активної мови імпорту
             if not name and lang == current_lang:
                 name = row.get("name")
             if not slug and lang == current_lang:
@@ -53,8 +47,6 @@ class CategoryResource(resources.ModelResource):
                 if slug:
                     instance.slug = slug
 
-        # 2. Тільки тепер викликаємо super().
-        # Parler побачить заповнені дані в кеші та автоматично створить і категорію, і переклад.
         super().save_instance(instance, is_create, row, **kwargs)
 
 
@@ -74,7 +66,19 @@ class ProductResource(resources.ModelResource):
 
     class Meta:
         model = Product
-        fields = ("id", "category", "price", "available")
+        # Додаємо всі мовні поля в список дозволених для експорту/імпорту
+        fields = (
+            "id",
+            "category",
+            "price",
+            "available",
+            "name_uk",
+            "slug_uk",
+            "description_uk",
+            "name_en",
+            "slug_en",
+            "description_en",
+        )
         export_order = (
             "id",
             "category_id",
@@ -108,14 +112,11 @@ class ProductResource(resources.ModelResource):
 
     def save_instance(self, instance, is_create, row, **kwargs):
         current_lang = get_language() or "uk"
-
-        # 1. Заповнюємо переклади продукту до збереження
         for lang in ["uk", "en"]:
             name = row.get(f"name_{lang}")
             slug = row.get(f"slug_{lang}")
             description = row.get(f"description_{lang}")
 
-            # ФОЛБЕК для простих колонок без суфіксів мов
             if not name and lang == current_lang:
                 name = row.get("name")
             if not slug and lang == current_lang:
@@ -132,5 +133,4 @@ class ProductResource(resources.ModelResource):
                 if description is not None:
                     instance.description = description
 
-        # 2. Зберігаємо базовий продукт та його переклади разом
         super().save_instance(instance, is_create, row, **kwargs)
