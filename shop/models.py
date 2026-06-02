@@ -1,5 +1,7 @@
 from django.db import models
 from django.urls import reverse
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 from parler.models import TranslatableModel, TranslatedFields
 
 
@@ -40,6 +42,13 @@ class Product(TranslatableModel):
         Category, related_name="products", on_delete=models.CASCADE
     )
     image = models.ImageField(upload_to="products/%Y/%m/%d", blank=True)
+    image_thumbnail = ImageSpecField(
+        source="image",
+        processors=[ResizeToFill(300, 300)],
+        format="JPEG",
+        options={"quality": 85},
+    )
+
     price = models.DecimalField(max_digits=10, decimal_places=2)
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)

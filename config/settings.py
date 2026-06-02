@@ -46,6 +46,7 @@ SITE_ID = 1
 INSTALLED_APPS = [
     # Third party Apps
     "import_export",
+    "imagekit",
     "rosetta",
     "parler",
     "localflavor",
