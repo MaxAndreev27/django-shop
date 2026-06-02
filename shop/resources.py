@@ -1,3 +1,6 @@
+from django.utils.translation import (
+    get_language,
+)
 from import_export import fields, resources
 from import_export.widgets import ForeignKeyWidget
 
@@ -5,7 +8,6 @@ from .models import Category, Product
 
 
 class CategoryResource(resources.ModelResource):
-    # Явно оголошуємо колонки для кожної мови
     name_uk = fields.Field(column_name="name_uk")
     slug_uk = fields.Field(column_name="slug_uk")
     name_en = fields.Field(column_name="name_en")
@@ -16,7 +18,6 @@ class CategoryResource(resources.ModelResource):
         fields = ("id",)
         export_order = ("id", "name_uk", "slug_uk", "name_en", "slug_en")
 
-    # Логіка Експорту: дістаємо переклади безпечно
     def dehydrate_name_uk(self, instance):
         return instance.safe_translation_getter("name", language_code="uk") or ""
 
@@ -29,28 +30,40 @@ class CategoryResource(resources.ModelResource):
     def dehydrate_slug_en(self, instance):
         return instance.safe_translation_getter("slug", language_code="en") or ""
 
-    # Логіка Імпорту: розкладаємо дані з CSV по таблицях перекладів
     def save_instance(self, instance, is_create, row, **kwargs):
-        # Передаємо точно 3 аргументи, а решту прокидуємо через **kwargs
-        super().save_instance(instance, is_create, row, **kwargs)
+        # Визначаємо поточну мову адмінки (наприклад, 'uk' або 'en')
+        current_lang = get_language() or "uk"
+
+        # 1. Спочатку заповнюємо переклади В ОБ'ЄКТІ (до збереження в базу)
         for lang in ["uk", "en"]:
             name = row.get(f"name_{lang}")
             slug = row.get(f"slug_{lang}")
+
+            # ФОЛБЕК: Якщо у файлі звичайні колонки 'name'/'slug',
+            # відносимо їх до поточної активної мови імпорту
+            if not name and lang == current_lang:
+                name = row.get("name")
+            if not slug and lang == current_lang:
+                slug = row.get("slug")
+
             if name or slug:
                 instance.set_current_language(lang)
-                instance.name = name
-                instance.slug = slug
-                instance.save()
+                if name:
+                    instance.name = name
+                if slug:
+                    instance.slug = slug
+
+        # 2. Тільки тепер викликаємо super().
+        # Parler побачить заповнені дані в кеші та автоматично створить і категорію, і переклад.
+        super().save_instance(instance, is_create, row, **kwargs)
 
 
 class ProductResource(resources.ModelResource):
-    # Зв'язок з категорією через ID (так надійніше для імпорту)
     category = fields.Field(
         column_name="category_id",
         attribute="category",
         widget=ForeignKeyWidget(Category, "id"),  # type: ignore
     )
-    # Поля перекладів для Product
     name_uk = fields.Field(column_name="name_uk")
     slug_uk = fields.Field(column_name="slug_uk")
     description_uk = fields.Field(column_name="description_uk")
@@ -75,7 +88,6 @@ class ProductResource(resources.ModelResource):
             "description_en",
         )
 
-    # Логіка Експорту продуктів
     def dehydrate_name_uk(self, instance):
         return instance.safe_translation_getter("name", language_code="uk") or ""
 
@@ -94,18 +106,31 @@ class ProductResource(resources.ModelResource):
     def dehydrate_description_en(self, instance):
         return instance.safe_translation_getter("description", language_code="en") or ""
 
-    # Логіка Імпорту продуктів
     def save_instance(self, instance, is_create, row, **kwargs):
-        # Передаємо точно 3 аргументи, а решту прокидуємо через **kwargs
-        super().save_instance(instance, is_create, row, **kwargs)
-        # Потім створюємо/оновлюємо переклади
+        current_lang = get_language() or "uk"
+
+        # 1. Заповнюємо переклади продукту до збереження
         for lang in ["uk", "en"]:
             name = row.get(f"name_{lang}")
             slug = row.get(f"slug_{lang}")
-            description = row.get(f"description_{lang}", "")
-            if name or slug:
+            description = row.get(f"description_{lang}")
+
+            # ФОЛБЕК для простих колонок без суфіксів мов
+            if not name and lang == current_lang:
+                name = row.get("name")
+            if not slug and lang == current_lang:
+                slug = row.get("slug")
+            if not description and lang == current_lang:
+                description = row.get("description", "")
+
+            if name or slug or description:
                 instance.set_current_language(lang)
-                instance.name = name
-                instance.slug = slug
-                instance.description = description
-                instance.save()
+                if name:
+                    instance.name = name
+                if slug:
+                    instance.slug = slug
+                if description is not None:
+                    instance.description = description
+
+        # 2. Зберігаємо базовий продукт та його переклади разом
+        super().save_instance(instance, is_create, row, **kwargs)

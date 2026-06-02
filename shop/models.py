@@ -18,7 +18,13 @@ class Category(TranslatableModel):
         verbose_name_plural = "categories"
 
     def __str__(self):
-        return self.name
+        # 1. Намагається знайти 'name' поточною мовою (uk)
+        # 2. Якщо немає — шукає будь-яку іншу наявну мову (any_language=True)
+        # 3. Якщо взагалі перекладів немає — повертає безпечний дефолт
+        return (
+            self.safe_translation_getter("name", any_language=True)
+            or f"Category #{self.id}"
+        )
 
     def get_absolute_url(self):
         return reverse("shop:product_list_by_category", args=[self.slug])
@@ -48,7 +54,11 @@ class Product(TranslatableModel):
         ]
 
     def __str__(self):
-        return self.name
+        # Робимо такий самий захист для продуктів, щоб вони не падали при імпорті
+        return (
+            self.safe_translation_getter("name", any_language=True)
+            or f"Product #{self.id}"
+        )
 
     def get_absolute_url(self):
         return reverse("shop:product_detail", args=[self.id, self.slug])
