@@ -8,7 +8,7 @@ from .resources import CategoryResource, ProductResource
 
 @admin.register(Category)
 class CategoryAdmin(ImportExportMixin, TranslatableAdmin):
-    resource_classes = [CategoryResource]
+    resource_class = CategoryResource
     list_display = ["name", "slug"]
 
     def get_prepopulated_fields(self, request, obj=None):
@@ -17,7 +17,7 @@ class CategoryAdmin(ImportExportMixin, TranslatableAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ImportExportMixin, TranslatableAdmin):
-    resource_classes = [ProductResource]
+    resource_class = ProductResource
     list_display = ["name", "slug", "price", "available", "created", "updated"]
     list_filter = ["available", "created", "updated"]
     list_editable = ["price", "available"]
