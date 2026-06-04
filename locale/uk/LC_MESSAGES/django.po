@@ -181,7 +181,7 @@ msgstr "Продовжити покупки"
 #: templates/cart/detail.html:103 templates/orders/order/create.html:5
 #: templates/orders/order/create.html:9
 msgid "Checkout"
-msgstr "Оформлення замовлення"
+msgstr "Оформлення"
 
 #: templates/orders/order/create.html:11
 msgid "Your order"
