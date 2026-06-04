@@ -1,5 +1,15 @@
 @import url(//fonts.googleapis.com/css?family=Ubuntu);
 
+/* Сучасні змінні для керування макс. шириною та автоматичними відступами */
+:root {
+    --max-width: 1200px;
+    /* Золотий стандарт ширини контентної зони */
+
+    /* Формула динамічного падінгу: на малих екранах відступи 20px, 
+       на моніторах > 1200px вільний простір розподіляється порівну, центруючи контент */
+    --layout-padding: max(20px, calc((100% - var(--max-width)) / 2));
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -125,41 +135,49 @@ ul.errorlist {
     padding: 10px 0;
 }
 
-
+/* СУЧАСНИЙ МАКЕТ: Хедер (Лого + Мови) */
 #header {
-    padding: 10px 100px;
+    padding: 20px var(--layout-padding);
     font-size: 18px;
-    overflow: auto;
-}
-
-#subheader {
-    background: #ececec;
-    color: #444;
-    padding: 15px 100px;
-    overflow: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 #header .logo {
     font-family: 'Ubuntu', sans-serif;
-    float: left;
     color: #333;
     font-size: 22px;
-    margin-right: 10%;
+    margin-right: 0;
+}
+
+/* СУЧАСНИЙ МАКЕТ: Сабхедер (Кошик) */
+#subheader {
+    background: #ececec;
+    color: #444;
+    padding: 15px var(--layout-padding);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 #subheader .cart {
-    float: right;
-    padding-top: 4px;
+    padding-top: 0;
 }
 
+/* СУЧАСНИЙ МАКЕТ: Зона основного контенту */
 #content {
-    padding: 0 100px;
-    overflow: hidden;
+    padding: 40px var(--layout-padding);
+    min-height: calc(100vh - 220px);
+    /* Тримає футер внизу, якщо контенту мало */
 }
 
+/* СУЧАСНИЙ МАКЕТ: Сайдбар для категорій */
 #sidebar {
     width: 220px;
-    padding: 30px 20px 0 0;
+    padding: 10px 0 0 0;
     float: left;
 }
 
@@ -187,24 +205,33 @@ ul.errorlist {
     color: #fff;
 }
 
-#main {
-    float: left;
-    width: 96%;
-    margin-right: -220px;
-    overflow: hidden;
+/* СУЧАСНИЙ МАКЕТ: Список товарів через чистий Grid (без зламаних флотів) */
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-left: 260px;
+    /* Створює правильний відступ від сайдбару (220px + 40px gap) */
+}
+
+.product-list h1 {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 0;
 }
 
 .product-list .item {
-    width: 25%;
-    padding: 10px 20px 10px 0;
-    float: left;
+    width: 100%;
     text-align: center;
     line-height: 1.2;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .product-list .item img {
     width: 100%;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     max-width: 300px;
     height: auto !important;
     aspect-ratio: 1 / 1 !important;
@@ -212,6 +239,7 @@ ul.errorlist {
     display: block;
 }
 
+/* Сторінка детального опису товару */
 .product-detail {
     text-align: justify;
 }
@@ -273,8 +301,6 @@ ul.errorlist {
 }
 
 .languages {
-    float: right;
-    padding-top: 4px;
     font-size: 14px;
 }
 
@@ -344,6 +370,15 @@ form div.field {
     border-radius: 4px;
 }
 
+/* Адаптивність для планшетів */
+@media (max-width: 1024px) {
+    .product-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+/* Адаптивність для мобільних пристроїв */
 @media (max-width: 768px) {
 
     #header,
@@ -355,26 +390,26 @@ form div.field {
 
     #header {
         text-align: center;
+        flex-direction: column;
+        gap: 12px;
     }
 
     #header .logo {
-        float: none !important;
         display: block;
-        margin: 0 auto 10px auto !important;
+        margin: 0 auto !important;
     }
 
     .languages {
-        float: none !important;
         display: inline-block;
         padding-top: 5px;
     }
 
     #subheader {
         text-align: center;
+        justify-content: center;
     }
 
     #subheader .cart {
-        float: none !important;
         display: block;
         margin-top: 5px;
     }
@@ -403,9 +438,17 @@ form div.field {
         margin-right: 0 !important;
     }
 
+    .product-list {
+        grid-template-columns: repeat(2, 1fr) !important;
+        margin-left: 0 !important;
+        /* Скидаємо лівий марджин сайдбару на мобільних */
+        gap: 15px;
+    }
+
     .product-list .item {
-        width: 50% !important;
-        padding: 10px !important;
+        width: 100% !important;
+        float: none !important;
+        padding: 0 !important;
         box-sizing: border-box;
     }
 
