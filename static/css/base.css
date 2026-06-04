@@ -472,14 +472,131 @@ form div.field {
         box-sizing: border-box;
     }
 
+    /* 1. Адаптивність таблиць у кошику та підсумку замовлення */
     table.cart {
         display: block;
         width: 100%;
         overflow-x: auto;
+        /* Дозволяє горизонтальну прокрутку самої таблиці */
         -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        /* Запобігає негарному переносу тексту в кнопках */
+        margin-bottom: 20px;
     }
 
     table.cart img {
         width: 80px !important;
+        /* Зменшуємо прев'ю товарів на мобільних */
+        height: auto;
+    }
+
+    table.cart th,
+    table.cart td {
+        padding: 8px 10px !important;
+        font-size: 13px;
+        /* Трохи зменшуємо шрифт для компактності */
+    }
+
+    /* Форми оновлення кількості всередині комірок таблиці */
+    table.cart td form {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+    }
+
+    table.cart td input[type="submit"] {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    /* 2. Сторінка оформлення замовлення (Checkout) */
+    .order-form {
+        float: none !important;
+        width: 100% !important;
+        margin-bottom: 30px;
+    }
+
+    .order-info {
+        float: none !important;
+        width: 100% !important;
+        margin-top: 0;
+        margin-bottom: 25px;
+        box-sizing: border-box;
+    }
+
+    /* Адаптуємо поля форми Django {{ form.as_p }} */
+    form p {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    form p input,
+    form div.field {
+        width: 100% !important;
+        /* Інпути тепер займають всю ширину екрана смартфона */
+        max-width: 100% !important;
+        box-sizing: border-box;
+        /* Враховує padding у загальну ширину */
+        float: none !important;
+    }
+
+    form p label {
+        float: none !important;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    /* 3. Блок рекомендацій на сторінці кошика */
+    .recommendations.cart {
+        width: 100% !important;
+        float: none !important;
+        margin-top: 30px;
+        clear: both;
+    }
+
+    .recommendations.cart h3 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+
+    /* Робимо сітку для рекомендованих товарів у кошику */
+    .recommendations.cart .item {
+        display: inline-block;
+        width: 46% !important;
+        margin-right: 4% !important;
+        margin-bottom: 20px;
+        vertical-align: top;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .recommendations.cart .item:nth-child(2n) {
+        margin-right: 0 !important;
+        /* Прибираємо відступ у кожного другого елемента */
+    }
+
+    .recommendations.cart img {
+        width: 100% !important;
+        max-width: 150px;
+        height: auto;
+    }
+
+    /* Форма застосування купона під кошиком */
+    form:has(input[name="code"]) {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    form:has(input[name="code"]) input {
+        width: 100% !important;
+    }
+
+    /* 4. Покращення для сторінок успіху/скасування (created, canceled, completed) */
+    .product-list+p,
+    #content>h1+p {
+        line-height: 1.5;
+        font-size: 15px;
     }
 }
